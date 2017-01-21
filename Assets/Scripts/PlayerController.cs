@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 		
-	void OnCollisionStay2D(Collider2D other) {
+	void OnTriggerEnter2D(Collider2D other) {
 		if (other.CompareTag ("PickUp")) {
 			Destroy(other.gameObject);
 			energy++;
