@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
 	public Text HUDTxt;
 	public GameObject emp;
 	public Animator animator;
+	public float attackDuration;
 
 	private Rigidbody2D rb2d;
 	private BoxCollider2D bc2d;
@@ -19,15 +20,21 @@ public class PlayerController : MonoBehaviour {
 	private int life;
 	private float jmptime;
 
+	//stop move on fire
+	private float stopMove;
 
 	void Start () {
 		//Physic
 		rb2d = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator> ();
 		bc2d = GetComponent<BoxCollider2D> ();
-		energy = 0;
+
+		energy = 3;
 		life = 10;
+
 		jmptime = 0.0f;
+		stopMove = 0;
+
 		SetHUDText ();
 	}
 
@@ -44,7 +51,8 @@ public class PlayerController : MonoBehaviour {
 
 		//Move X
 		float moveHoriz = Input.GetAxis ("Horizontal" + playerid);
-		if (moveHoriz != 0) {
+
+		if (moveHoriz != 0 && Time.time > stopMove) {
 			animator.SetTrigger ("playerWalk");
 			transform.position += new Vector3 (moveHoriz, 0.0f, 0.0f) * Time.deltaTime * speed;
 		} else {
@@ -53,13 +61,22 @@ public class PlayerController : MonoBehaviour {
 
 		//float moveVert = Input.GetAxis ("Vertical" + playerid);
 
-		if (Input.GetButtonDown ("Fire1" + playerid)) {
+		if (Input.GetButtonDown ("Fire1" + playerid) && energy > 0) {
+			//play attack animation
+			animator.SetTrigger ("playerAttack");
+			//set stop move duration
+			stopMove = Time.time + attackDuration;
+
+			//EMP
 			GameObject empinst = Instantiate (emp, transform.position, transform.rotation);
 			empinst.SendMessage("SetEnergy", ((float) energy));
 			empinst.SendMessage("SetOwnerId", playerid);
+
+			//Reset EMP energy
 			energy = 0;
 			SetHUDText ();
 		}
+			
 
 		if (Input.GetButtonDown ("Jump" + playerid) && jmptime <= 0.0f) {
 			rb2d.AddForce(Vector2.up * jumpforce);
