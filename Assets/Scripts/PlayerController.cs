@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour {
 	public float jumpforce = 10.0f;
 	public Text HUDTxt;
 	public GameObject emp;
+	public int nextJump;
 
 	private Rigidbody2D rb2d;
 	private BoxCollider2D cb2d;
@@ -17,12 +18,17 @@ public class PlayerController : MonoBehaviour {
 	private int energy;
 	private int life;
 
+
 	void Start () {
+		energy = 2;
 		rb2d = GetComponent<Rigidbody2D> ();
 		cb2d = GetComponent<BoxCollider2D> ();
 		energy = 0;
 		life = 10;
 		SetHUDText ();
+	}
+	void Update () {
+		
 	}
 
 	void FixedUpdate () {
@@ -38,7 +44,8 @@ public class PlayerController : MonoBehaviour {
 			energy = 0;
 			SetHUDText ();
 		}
-		if (Input.GetButton ("Jump" + playerid) && IsGrounded()) {
+
+		if (Input.GetButtonDown ("Jump" + playerid) && IsGrounded()) {
 			rb2d.AddForce(Vector2.up * jumpforce);
 		}
 	}
@@ -61,7 +68,8 @@ public class PlayerController : MonoBehaviour {
 
 	bool IsGrounded() {
 		RaycastHit2D hit = Physics2D.Raycast(transform.position - Vector3.up * cb2d.size.y / 2, -Vector2.up, 0.01f);
-		if (hit.collider != null) {
+
+		if (hit.collider != null ) {
 			return true;
 		}
 		return false;
