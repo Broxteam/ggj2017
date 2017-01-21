@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour {
 	public float jumpforce = 10.0f;
 	public Text HUDTxt;
 	public GameObject emp;
-	public int nextJump;
+	public Animator animator;
 
 	private Rigidbody2D rb2d;
 	private BoxCollider2D cb2d;
@@ -20,22 +20,36 @@ public class PlayerController : MonoBehaviour {
 
 
 	void Start () {
-		energy = 2;
+		//Physic
 		rb2d = GetComponent<Rigidbody2D> ();
 		cb2d = GetComponent<BoxCollider2D> ();
-		energy = 0;
+
+		//Animation
+		animator = GetComponent<Animator> ();
+
+		//player def
+		energy = 2;
 		life = 10;
+
 		SetHUDText ();
 	}
+
 	void Update () {
 		
 	}
 
 	void FixedUpdate () {
-		float moveHoriz = Input.GetAxis ("Horizontal" + playerid);
-		//float moveVert = Input.GetAxis ("Vertical" + playerid);
 
-		transform.position += new Vector3(moveHoriz, 0.0f, 0.0f) * Time.deltaTime * speed;
+		//Move X
+		float moveHoriz = Input.GetAxis ("Horizontal" + playerid);
+		if (moveHoriz != 0) {
+			animator.SetTrigger ("playerWalk");
+			transform.position += new Vector3 (moveHoriz, 0.0f, 0.0f) * Time.deltaTime * speed;
+		} else {
+			animator.SetTrigger ("playerIdle");
+		}
+
+		//float moveVert = Input.GetAxis ("Vertical" + playerid);
 
 		if (Input.GetButton ("Fire1" + playerid)) {
 			GameObject empinst = Instantiate (emp, transform.position, transform.rotation);
