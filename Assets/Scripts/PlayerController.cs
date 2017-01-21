@@ -13,29 +13,31 @@ public class PlayerController : MonoBehaviour {
 	public Animator animator;
 
 	private Rigidbody2D rb2d;
-	private BoxCollider2D cb2d;
+	private BoxCollider2D bc2d;
 
 	private int energy;
 	private int life;
+	private float jmptime;
 
 
 	void Start () {
 		//Physic
 		rb2d = GetComponent<Rigidbody2D> ();
-		cb2d = GetComponent<BoxCollider2D> ();
-
-		//Animation
 		animator = GetComponent<Animator> ();
-
-		//player def
-		energy = 2;
+		bc2d = GetComponent<BoxCollider2D> ();
+		energy = 0;
 		life = 10;
-
+		jmptime = 0.0f;
 		SetHUDText ();
 	}
 
 	void Update () {
-		
+		if (jmptime > 0.0f) {
+			jmptime -= Time.deltaTime;
+			if (jmptime < 0.0f) {
+				jmptime = 0.0f;
+			}
+		}
 	}
 
 	void FixedUpdate () {
@@ -51,7 +53,7 @@ public class PlayerController : MonoBehaviour {
 
 		//float moveVert = Input.GetAxis ("Vertical" + playerid);
 
-		if (Input.GetButton ("Fire1" + playerid)) {
+		if (Input.GetButtonDown ("Fire1" + playerid)) {
 			GameObject empinst = Instantiate (emp, transform.position, transform.rotation);
 			empinst.SendMessage("SetEnergy", ((float) energy));
 			empinst.SendMessage("SetOwnerId", playerid);
@@ -59,8 +61,9 @@ public class PlayerController : MonoBehaviour {
 			SetHUDText ();
 		}
 
-		if (Input.GetButtonDown ("Jump" + playerid) && IsGrounded()) {
+		if (Input.GetButtonDown ("Jump" + playerid) && jmptime <= 0.0f) {
 			rb2d.AddForce(Vector2.up * jumpforce);
+			jmptime = 0.8f;
 		}
 	}
 		
@@ -81,10 +84,11 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	bool IsGrounded() {
-		RaycastHit2D hit = Physics2D.Raycast(transform.position - Vector3.up * cb2d.size.y / 2, -Vector2.up, 0.01f);
-
-		if (hit.collider != null ) {
-			return true;
+		RaycastHit2D hit = Physics2D.Raycast(transform.position - (Vector3.up * (bc2d.size.y / 2.0f)), -Vector2.up, 0.00001f);
+		if (hit.collider != null) {
+			if (hit.collider.gameObject.CompareTag ("Ground") != null) {
+				return true;
+			}
 		}
 		return false;
 	}

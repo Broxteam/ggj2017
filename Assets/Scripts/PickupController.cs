@@ -15,9 +15,9 @@ public class PickupController : MonoBehaviour {
 	void Start() {
 		rb2d = GetComponent<Rigidbody2D> ();
 		cc2d = GetComponent<CircleCollider2D> ();
-		fallspeed = 0.5f;
+		fallspeed = 0.1f;
 		falling = true;
-		rndmlateral = (Random.value * 2.0f - 1.0f) / 4.0f;
+		rndmlateral = (Random.value * 2.0f - 1.0f);
 	}
 
 	void Update() {
