@@ -12,13 +12,14 @@ public class PlayerController : MonoBehaviour {
 	public GameObject emp;
 
 	private Rigidbody2D rb2d;
-	private CircleCollider2D cc2d;
+	private BoxCollider2D cb2d;
+
 	private int energy;
 	private int life;
 
 	void Start () {
 		rb2d = GetComponent<Rigidbody2D> ();
-		cc2d = GetComponent<CircleCollider2D> ();
+		cb2d = GetComponent<BoxCollider2D> ();
 		energy = 0;
 		life = 10;
 		SetHUDText ();
@@ -59,7 +60,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	bool IsGrounded() {
-		RaycastHit2D hit = Physics2D.Raycast(transform.position - Vector3.up * cc2d.radius, -Vector2.up, 0.01f);
+		RaycastHit2D hit = Physics2D.Raycast(transform.position - Vector3.up * cb2d.size.y / 2, -Vector2.up, 0.01f);
 		if (hit.collider != null) {
 			return true;
 		}
