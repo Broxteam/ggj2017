@@ -98,11 +98,14 @@ public class PlayerController : MonoBehaviour {
 	}
 		
 	void OnTriggerEnter2D(Collider2D other) {
+		Debug.Log ("aaaaaaaaaaaaaaaaaaa");
 		if (other.CompareTag ("PickUp")) {
+			Debug.Log ("RRRRRRRRRRRRRRRRRRRR");
 			Destroy(other.gameObject);
 			energy++;
 			SetHUDText ();
 		}
+
 	}
 
 	void HurtPlayer(int damage) {
