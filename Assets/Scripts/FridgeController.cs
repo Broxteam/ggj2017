@@ -8,6 +8,8 @@ public class FridgeController : MonoBehaviour {
 	public GameObject pickupChiken;
 	public GameObject pickupSalad;
 
+	public Animator animator;
+
 	public float spawntime;
 	public int maxwaitingmeals;
 	private float time;
@@ -20,6 +22,8 @@ public class FridgeController : MonoBehaviour {
 		time = 0.0f;
 		waitingmeals = 0;
 		asrc = GetComponent<AudioSource> ();
+
+		animator = GetComponent<Animator> ();
 	}
 
 	void Update () {
@@ -35,6 +39,7 @@ public class FridgeController : MonoBehaviour {
 				pickupToUse = pickupSalad;
 			}
 
+			animator.SetTrigger ("vomit");
 
 
 			time = 0.0f;

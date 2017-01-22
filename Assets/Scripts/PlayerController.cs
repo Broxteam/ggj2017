@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -59,10 +60,17 @@ public class PlayerController : MonoBehaviour {
 
 	void FixedUpdate () {
 
+		//Exit
+		if (Input.GetButtonDown ("Cancel")) {
+			SceneManager.LoadScene("Start");
+			SceneManager.UnloadSceneAsync("Main");
+		};
+
+
 		//Move X
 		float moveHoriz = Input.GetAxis ("Horizontal" + playerid);
 
-		if (moveHoriz != 0 && Time.time > stopMove) {
+		if (moveHoriz != 0 && Time.time > stopMove && life > 0) {
 			animator.SetTrigger ("playerWalk");
 			transform.position += new Vector3 (moveHoriz, 0.0f, 0.0f) * Time.deltaTime * speed;
 		} else {
@@ -71,7 +79,7 @@ public class PlayerController : MonoBehaviour {
 
 		//float moveVert = Input.GetAxis ("Vertical" + playerid);
 
-		if (Input.GetButtonDown ("Fire1" + playerid) && energy >= 1)  {
+		if (Input.GetButtonDown ("Fire1" + playerid) && energy >= 1 && life > 0)  {
 			//play attack animation
 			animator.SetTrigger ("playerAttack");
 			//set stop move duration
@@ -102,7 +110,7 @@ public class PlayerController : MonoBehaviour {
 
 		//Jump Move Y
 		float jump = Input.GetAxis ("Vertical" + playerid);
-		if (jump > 0 && jmptime <= 0.0f) {
+		if (jump > 0 && jmptime <= 0.0f && life > 0) {
 			rb2d.AddForce(Vector2.up * jumpforce);
 			jmptime = 0.8f;
 			asrc.PlayOneShot (jmpsfx, 0.5f);
