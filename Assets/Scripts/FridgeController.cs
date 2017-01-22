@@ -12,12 +12,14 @@ public class FridgeController : MonoBehaviour {
 	public int maxwaitingmeals;
 	private float time;
 	private int waitingmeals;
+	private AudioSource asrc;
 
 	private GameObject pickupToUse;
 
 	void Start() {
 		time = 0.0f;
 		waitingmeals = 0;
+		asrc = GetComponent<AudioSource> ();
 	}
 
 	void Update () {
@@ -39,6 +41,7 @@ public class FridgeController : MonoBehaviour {
 			GameObject pickupinst = Instantiate (pickupToUse, transform.position, transform.rotation);
 			pickupinst.SendMessage ("SetFridge", this.gameObject);
 			waitingmeals++;
+			asrc.Play();
 		}
 	}
 

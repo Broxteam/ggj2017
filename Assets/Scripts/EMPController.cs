@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class EMPController : MonoBehaviour {
 
-	public float increment = 0.075f;
-	public float timeratio = 0.2f;
-	private float energy = 1.0f;
+	public float increment = 0.00075f;
+	public float timeratio = 0.02f;
+	private int energy = 1;
 	private float time;
 	private int ownerid;
 
@@ -14,7 +14,8 @@ public class EMPController : MonoBehaviour {
 		time = 0.0f;
 	}
 
-	void SetEnergy(float e) {
+	void SetEnergy(int e) {
+		Debug.Log ("SetEnergy=" + e);
 		energy = e;
 	}
 
@@ -24,7 +25,7 @@ public class EMPController : MonoBehaviour {
 
 	void Update() {
 		time += Time.deltaTime;
-		transform.localScale += new Vector3 (increment, increment, 0.0f) * energy * 100.0f * Time.deltaTime;
+		transform.localScale += new Vector3 (increment, increment, 0.0f) * energy * 10.0f * Time.deltaTime;
 		if (time >= timeratio * energy) {
 			Destroy (this.gameObject);
 		}

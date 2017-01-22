@@ -5,6 +5,8 @@ using UnityEngine;
 public class PickupController : MonoBehaviour {
 
 	public float gravityScale;
+	public float energyValue;
+
 	private GameObject fridgectrl;
 	private BoxCollider2D cc2d;
 	private Rigidbody2D rb2d;

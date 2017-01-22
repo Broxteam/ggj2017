@@ -13,9 +13,17 @@ public class PlayerController : MonoBehaviour {
 	public Animator animator;
 	public float attackDuration;
 	public float jump;
+	public AudioClip jmpsfx;
+	public AudioClip eatmealsfx;
+	public AudioClip hurtsfx;
+	public AudioClip kosfx;
+	public AudioClip smallsfx;
+	public AudioClip midsfx;
+	public AudioClip bigsfx;
 
 	private Rigidbody2D rb2d;
 	private BoxCollider2D bc2d;
+	private AudioSource asrc;
 
 	private float energy;
 	private int life;
@@ -25,6 +33,7 @@ public class PlayerController : MonoBehaviour {
 	private float stopMove;
 
 	void Start () {
+		asrc = GetComponent<AudioSource> ();
 		//Physic
 		rb2d = GetComponent<Rigidbody2D> ();
 		animator = GetComponent<Animator> ();
@@ -73,10 +82,13 @@ public class PlayerController : MonoBehaviour {
 			//fix energy level
 			if (energy >= 3) {
 				energy = 3;
+				asrc.PlayOneShot (bigsfx, 0.5f);
 			} else if (energy >= 2) {
 				energy = 2;
+				asrc.PlayOneShot (midsfx, 0.5f);
 			} else {
 				energy = 1;
+				asrc.PlayOneShot (smallsfx, 0.5f);
 			}
 			empinst.SendMessage("SetEnergy", energy);
 			empinst.SendMessage("SetOwnerId", playerid);
@@ -93,16 +105,23 @@ public class PlayerController : MonoBehaviour {
 		if (jump > 0 && jmptime <= 0.0f) {
 			rb2d.AddForce(Vector2.up * jumpforce);
 			jmptime = 0.8f;
+			asrc.PlayOneShot (jmpsfx, 0.5f);
 		}
 
 	}
 		
 	void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log ("aaaaaaaaaaaaaaaaaaa");
-		if (other.CompareTag ("PickUp")) {
-			Debug.Log ("RRRRRRRRRRRRRRRRRRRR");
+
+		if (other.CompareTag ("PickUp") || other.CompareTag ("PickUp2") || other.CompareTag ("PickUp3")) {
+
+			animator.SetTrigger ("playerEat");
+
+			if (other.CompareTag ("PickUp")) energy += 0.91f;
+			if (other.CompareTag ("PickUp2")) energy += 0.93f;
+			if (other.CompareTag ("PickUp3")) energy += 0.97f;
+
 			Destroy(other.gameObject);
-			energy++;
+			asrc.PlayOneShot (eatmealsfx, 0.5f);
 			SetHUDText ();
 		}
 
@@ -110,8 +129,13 @@ public class PlayerController : MonoBehaviour {
 
 	void HurtPlayer(int damage) {
 		life -= damage;
-		if (life <= 0) {
-			// You lose !
+
+		if (life > 0) {
+			asrc.PlayOneShot (hurtsfx, 1.0f);
+			animator.SetTrigger ("playerHit");
+		} else {
+			asrc.PlayOneShot (kosfx, 1.0f);
+			animator.SetTrigger ("playerDead");
 		}
 		SetHUDText ();
 	}
