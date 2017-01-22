@@ -15,15 +15,16 @@ public class PickupController : MonoBehaviour {
 	void Start() {
 		rb2d = GetComponent<Rigidbody2D> ();
 		cc2d = GetComponent<CircleCollider2D> ();
-		fallspeed = 0.1f;
+		fallspeed = 0.14f;
 		falling = true;
-		rndmlateral = (Random.value * 2.0f - 1.0f);
+		rndmlateral = (Random.value * 2.0f - 1.5f);
+
 	}
 
 	void Update() {
 		if (falling) {
 			fallspeed -= gravityScale * Time.deltaTime;
-			transform.position += new Vector3 (rndmlateral, 1.0f * fallspeed, 0.0f) ;
+			transform.position += new Vector3 (rndmlateral / (Random.Range(8f, 25f)), 1.0f * fallspeed, 0.0f) ;
 		}
 	}
 
