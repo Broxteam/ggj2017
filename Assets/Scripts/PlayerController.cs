@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject emp;
 	public Animator animator;
 	public float attackDuration;
+	public float jump;
 
 	private Rigidbody2D rb2d;
 	private BoxCollider2D bc2d;
@@ -76,12 +77,14 @@ public class PlayerController : MonoBehaviour {
 			energy = 0;
 			SetHUDText ();
 		}
-			
 
-		if (Input.GetButtonDown ("Jump" + playerid) && jmptime <= 0.0f) {
+		//Jump Move Y
+		float jump = Input.GetAxis ("Vertical" + playerid);
+		if (jump > 0 && jmptime <= 0.0f) {
 			rb2d.AddForce(Vector2.up * jumpforce);
 			jmptime = 0.8f;
 		}
+
 	}
 		
 	void OnTriggerEnter2D(Collider2D other) {
