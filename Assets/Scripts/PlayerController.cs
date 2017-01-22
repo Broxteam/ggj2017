@@ -22,6 +22,11 @@ public class PlayerController : MonoBehaviour {
 	public AudioClip midsfx;
 	public AudioClip bigsfx;
 
+	//ref to the otehr player
+	public GameObject otherPlayer;
+	private Animator otherPlayerAnimator;
+	public Text WinTxt;
+
 	private Rigidbody2D rb2d;
 	private BoxCollider2D bc2d;
 	private AudioSource asrc;
@@ -33,6 +38,10 @@ public class PlayerController : MonoBehaviour {
 	//stop move on fire
 	private float stopMove;
 
+
+	public GameObject lifeBar;
+	public GameObject EMKingBar;
+
 	void Start () {
 		asrc = GetComponent<AudioSource> ();
 		//Physic
@@ -40,6 +49,12 @@ public class PlayerController : MonoBehaviour {
 		animator = GetComponent<Animator> ();
 		bc2d = GetComponent<BoxCollider2D> ();
 
+
+
+		//Animator of other player for anim on win
+		otherPlayerAnimator = otherPlayer.GetComponent<Animator> ();
+
+		//PLAYER
 		energy = 1;
 		life = 10;
 
@@ -124,9 +139,9 @@ public class PlayerController : MonoBehaviour {
 
 			animator.SetTrigger ("playerEat");
 
-			if (other.CompareTag ("PickUp")) energy += 0.91f;
-			if (other.CompareTag ("PickUp2")) energy += 0.93f;
-			if (other.CompareTag ("PickUp3")) energy += 0.97f;
+			if (other.CompareTag ("PickUp")) energy += 0.15f;
+			if (other.CompareTag ("PickUp2")) energy += 0.25f;
+			if (other.CompareTag ("PickUp3")) energy += 0.5f;
 
 			Destroy(other.gameObject);
 			asrc.PlayOneShot (eatmealsfx, 0.5f);
@@ -142,9 +157,21 @@ public class PlayerController : MonoBehaviour {
 			asrc.PlayOneShot (hurtsfx, 1.0f);
 			animator.SetTrigger ("playerHit");
 		} else {
+			//Dead
 			asrc.PlayOneShot (kosfx, 1.0f);
 			animator.SetTrigger ("playerDead");
+
+
+			//for win player
+			otherPlayerAnimator.SetTrigger ("playerWin");
+			int idWin = 1;
+			if (playerid == 1) idWin = 2;
+				
+			WinTxt.text = "PLAYER " + idWin.ToString () + " WINS !!!";
+
 		}
+			
+	
 		SetHUDText ();
 	}
 
@@ -159,6 +186,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void SetHUDText() {
-		HUDTxt.text = "Player " + playerid.ToString() + " EM " + energy.ToString () + " Life " + life.ToString();
+		//HUDTxt.text = "Player " + playerid.ToString() + " EM " + energy.ToString () + " Life " + life.ToString();
+		HUDTxt.text = energy.ToString () + "\n" + life.ToString();
 	}
 }
