@@ -35,12 +35,16 @@ public class PlayerController : MonoBehaviour {
 	private int life;
 	private float jmptime;
 
-	//stop move on fire
-	private float stopMove;
+    //stop move on fire
+    private float stopMove;
 
 
 	public GameObject lifeBar;
-	public GameObject EMKingBar;
+    private float lifeBarScaleXFactor;
+    public GameObject powerBar;
+    private float powerBarScaleXFactor;
+
+    public GameObject EMKingBar;
 
 	void Start () {
 		asrc = GetComponent<AudioSource> ();
@@ -57,8 +61,10 @@ public class PlayerController : MonoBehaviour {
 		//PLAYER
 		energy = 1;
 		life = 10;
+        lifeBarScaleXFactor = lifeBar.transform.localScale.x / life;
+        powerBarScaleXFactor = 25f;
 
-		jmptime = 0.0f;
+        jmptime = 0.0f;
 		stopMove = 0;
 
 		SetHUDText ();
@@ -102,8 +108,10 @@ public class PlayerController : MonoBehaviour {
 
 			//EMP
 			GameObject empinst = Instantiate (emp, transform.position, transform.rotation);
-			//fix energy level
-			if (energy >= 3) {
+            float realEnergy = energy;
+            realEnergy = Mathf.Clamp(realEnergy, 0f, 3f);
+            //fix energy level
+            if (energy >= 3) {
 				energy = 3;
 				asrc.PlayOneShot (bigsfx, 0.5f);
 			} else if (energy >= 2) {
@@ -116,11 +124,20 @@ public class PlayerController : MonoBehaviour {
 			empinst.SendMessage("SetEnergy", energy);
 			empinst.SendMessage("SetOwnerId", playerid);
 
-			//Reset EMP energy
-			//TEST EMP
-			energy = 0;
+            //Reset EMP
+            //reset scale
+            powerBar.transform.localScale = new Vector3(0, 1, 1);
+            //resert position
+            int sign = 1;
+            if (playerid == 1) sign = -1;
 
-			SetHUDText ();
+            float newPosX = powerBar.transform.position.x + (sign * 0.125f * realEnergy);
+            powerBar.transform.position = new Vector3(newPosX, powerBar.transform.position.y, 1);
+
+            //reset energy value
+            energy = 0;
+
+            SetHUDText ();
 		}
 
 		//Jump Move Y
@@ -138,20 +155,63 @@ public class PlayerController : MonoBehaviour {
 		if (other.CompareTag ("PickUp") || other.CompareTag ("PickUp2") || other.CompareTag ("PickUp3")) {
 
 			animator.SetTrigger ("playerEat");
+            asrc.PlayOneShot(eatmealsfx, 0.5f);
+            Destroy(other.gameObject);
 
-			if (other.CompareTag ("PickUp")) energy += 0.15f;
-			if (other.CompareTag ("PickUp2")) energy += 0.25f;
-			if (other.CompareTag ("PickUp3")) energy += 0.5f;
+            if (energy < 3)
+            {
+                float pickupValue = 0;
 
-			Destroy(other.gameObject);
-			asrc.PlayOneShot (eatmealsfx, 0.5f);
-			SetHUDText ();
+                if (other.CompareTag("PickUp"))
+                {
+                    energy += 0.15f;
+                    pickupValue = 0.15f;
+                }
+                if (other.CompareTag("PickUp2"))
+                {
+                    energy += 0.25f;
+                    pickupValue = 0.25f;
+                }
+                if (other.CompareTag("PickUp3"))
+                {
+                    energy += 0.5f;
+                    pickupValue = 0.5f;
+                }
+
+                //scale power bar
+                float energyPowerBar = Mathf.Clamp(energy, 0f, 3f);
+                powerBar.transform.localScale = new Vector3(powerBarScaleXFactor * energyPowerBar, 1, 1);
+
+                int sign = -1;
+                if (playerid == 1) sign = 1;
+                if (energy > 3)
+                    pickupValue -= energy - 3;
+
+                float newPosX = powerBar.transform.position.x + (sign * 0.125f * pickupValue);
+                powerBar.transform.position = new Vector3(newPosX, powerBar.transform.position.y, 1);
+
+                SetHUDText();
+            }
 		}
 
 	}
 
 	void HurtPlayer(int damage) {
-		life -= damage;
+
+        //lifeBar scale X linear
+        lifeBar.transform.localScale = new Vector3(lifeBar.transform.localScale.x - lifeBarScaleXFactor, 1, 1);
+        //Debug.Log("orthographicSize=" + Camera.main.orthographicSize);
+        //float newPosX = lifeBar.transform.position.x + ((((lifeBar.transform.position.x / life) )) / 10) * Camera.main.orthographicSize;
+
+        int sign = 1;
+        if (playerid == 1) sign = -1;
+
+        //lifebar pos X linear
+        float newPosX = lifeBar.transform.position.x + (sign * 0.0375f * damage);
+        lifeBar.transform.position = new Vector3(newPosX, lifeBar.transform.position.y, 1);
+
+        //decrease life value
+        life -= damage;
 
 		if (life > 0) {
 			asrc.PlayOneShot (hurtsfx, 1.0f);
@@ -187,6 +247,6 @@ public class PlayerController : MonoBehaviour {
 
 	void SetHUDText() {
 		//HUDTxt.text = "Player " + playerid.ToString() + " EM " + energy.ToString () + " Life " + life.ToString();
-		HUDTxt.text = energy.ToString () + "\n" + life.ToString();
+		HUDTxt.text = energy.ToString ();
 	}
 }
